@@ -1,4 +1,4 @@
-class UserController extends Controller {
+class UsersController extends Controller {
 
     public function_construct()
     {
@@ -7,7 +7,7 @@ class UserController extends Controller {
     public function index(): void 
     {
         $this->call->model('UsersModel');
-        $data['users']=$this->UserModel->all();
+        $data['users']=$this->UsersModel->all();
         $this->call->view('users/index',$data);
     }
 
@@ -19,7 +19,7 @@ class UserController extends Controller {
                 $email = $this->io->post('email');
 
                 $data=array('username' => $username, 'email' => $email);
-                if($this->UserModel->insert($data))
+                if($this->UsersModel->insert($data))
                     {
                         redirect();
                     }else
@@ -36,7 +36,7 @@ class UserController extends Controller {
 
      function update($id): void
      {
-       $user =$this-> usersModel -> find($id);
+       $user =$this-> UsersModel -> find($id);
        if(|$user)
        {
           echo "User not found";
