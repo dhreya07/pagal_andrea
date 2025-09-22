@@ -193,44 +193,10 @@ class Database {
      */
     public function __construct($dbname = NULL)
     {
-        if(is_null($dbname)) {
-        $database_config =& database_config()['main'];
-        } else {
-            if(isset(database_config()[$dbname])) {
-                $database_config =& database_config()[$dbname];
-            } else {
-                throw new PDOException('No active configuration for this database.');
-            }
-        }
-        $this->dbprefix = $database_config['dbprefix'];
-        $driver = strtolower($database_config['driver']);
-        $charset = $database_config['charset'];
-        $host = $database_config['hostname'];
-        $port = $database_config['port'];
-        $dbname_value = $database_config['database'];
-        $username = $database_config['username'];
-        $password = $database_config['password'];
-        $path = isset($database_config['path']) ? $database_config['path'] : null;
-
-        switch ($driver) {
-            case 'mysql':
-                $dsn = "mysql:host=$host;dbname=$dbname_value;charset=$charset;port=$port";
-                break;
-            case 'pgsql':
-                $dsn = "pgsql:host=$host;port=$port;dbname=$dbname_value;user=$username;password=$password";
-                break;
-            case 'sqlite':
-                if (empty($path)) {
-                    throw new PDOException('SQLite requires a valid file path.');
-                }
-                $dsn = "sqlite:$path";
-                break;
-            case 'sqlsrv':
-                $dsn = "sqlsrv:Server=$host,$port;Database=$dbname_value";
-                break;
-            default:
-                throw new PDOException("Unsupported database driver: $driver");
-        }
+        // Static credentials for OLD_* values
+        $dsn = "mysql:host=OLD_HOST;dbname=OLD_DB;charset=utf8mb4";
+        $username = "OLD_USER";
+        $password = "OLD_PASS";
 
         $options = array(
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
