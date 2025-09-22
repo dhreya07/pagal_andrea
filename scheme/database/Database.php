@@ -247,15 +247,19 @@ class Database {
     }
 
     /**
-     * Get Database Instance
-     *
-     * @return instance
-     */
-    public static function instance($dbname)
-    {
+ * Get Database Instance
+ *
+ * @param string $dbname
+ * @return Database
+ */
+public static function instance($dbname)
+{
+    if (!isset(self::$instance)) {
         self::$instance = new Database($dbname);
-        return self::$instance;
     }
+    return self::$instance;
+}
+
 
     /**
      * Raw Query
@@ -1135,15 +1139,24 @@ class Database {
      * @param int $records_per_page
      * @param int $page
      * @return void
-     */
-    public function pagination($records_per_page, $page)
-    {
-        $offset = ($page - 1) * $records_per_page;
+     *//**
+ * Apply pagination to the query
+ *
+ * @param int $recordsPerPage Number of records per page
+ * @param int $page Current page number (1-based)
+ * @return self
+ */
+public function pagination(int $recordsPerPage, int $page): self
+{
+    // Ensure valid input
+    $recordsPerPage = max($recordsPerPage, 1);
+    $page = max($page, 1);
 
-        $this->limit = ' LIMIT '.$offset.', '.$records_per_page;
+    $offset = ($page - 1) * $recordsPerPage;
+    $this->limit = sprintf('LIMIT %d, %d', $offset, $recordsPerPage);
 
-        return $this;
-    }
+    return $this;
+}
 
     /**
      * order_by
