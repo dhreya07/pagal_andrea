@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Directory - Kuromi Pink Coquette</title>
+  <title>User Directory - Swiftie Pink Coquette</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="<?=base_url();?>/public/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -11,83 +11,67 @@
   <style>
   body {
     font-family: 'Poppins', sans-serif;
-    background-image: url('https://i.pinimg.com/originals/3b/7e/2a/3b7e2a2e8c1e4f3c9e3f6e4b6a3f3c8e.jpg'); /* Taylor Swift Evermore portrait */
+    background-image: url('https://i.pinimg.com/736x/f0/d3/91/f0d391efc5a5c6b6ff1571318dd43259.jpg'); /* dreamy pink aesthetic */
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
   }
 
   .overlay {
-    background: rgba(50, 40, 40, 0.5); /* moody mist */
-  }
-
-  .magic-icon {
-    background: linear-gradient(135deg, #4b3f3f, #6e5e5e, #a9a9a9);
-    padding: 0.5rem;
-    border-radius: 9999px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-    animation: float 3s ease-in-out infinite;
-  }
-
-  @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
+    background: rgba(255, 240, 245, 0.6); /* soft pink mist */
   }
 
   .btn-folk {
-    background: linear-gradient(to right, #6e5e5e, #a9a9a9);
+    background: linear-gradient(to right, #fbc2eb, #a6c1ee);
     color: white;
   }
 
   .btn-folk:hover {
-    background: linear-gradient(to right, #a9a9a9, #6e5e5e);
+    background: linear-gradient(to right, #a6c1ee, #fbc2eb);
   }
 
   .bg-white\/40 {
-    background-color: rgba(245, 240, 235, 0.4); /* parchment tone */
+    background-color: rgba(255, 250, 252, 0.6); /* soft blush */
   }
 
   .border-pink-200 {
-    border-color: #6e5e5e;
+    border-color: #fbb6ce;
   }
 
   .shadow-2xl {
-    box-shadow: 0 0 25px rgba(60, 50, 50, 0.4);
+    box-shadow: 0 0 25px rgba(250, 182, 202, 0.4);
   }
 
   .text-pink-900 {
-    color: #3e2f2f;
+    color: #831843;
   }
 
   .bg-pink-50\/80 {
-    background-color: rgba(240, 235, 230, 0.8);
+    background-color: rgba(253, 242, 248, 0.8);
   }
 
   .placeholder-pink-400::placeholder {
-    color: #7b6e6e;
+    color: #f472b6;
   }
 
   .border-pink-300 {
-    border-color: #7b6e6e;
+    border-color: #f9a8d4;
   }
 
   .focus\:ring-pink-500:focus {
-    --tw-ring-color: #7b6e6e;
+    --tw-ring-color: #ec4899;
   }
 
   .bg-gradient-to-r {
-    background-image: linear-gradient(to right, #6e5e5e, #a9a9a9);
+    background-image: linear-gradient(to right, #f9a8d4, #fbc2eb);
   }
 
   .text-white {
-    color: #fdf6f0;
+    color: #fff;
   }
 
   .hover\:bg-pink-100\/50:hover {
-    background-color: rgba(220, 210, 200, 0.5);
+    background-color: rgba(252, 231, 243, 0.5);
   }
 
   /* Pagination Styles */
@@ -105,20 +89,20 @@
     justify-content: center;
     padding: 0.5rem 1rem;
     border-radius: 9999px;
-    background-color: rgba(240, 235, 230, 0.8);
-    color: #3e2f2f;
+    background-color: rgba(253, 242, 248, 0.8);
+    color: #831843;
     font-weight: 600;
     box-shadow: 0 2px 5px rgba(0,0,0,0.15);
     transition: all 0.2s ease-in-out;
   }
 
   .pagination a:hover {
-    background-color: #a9a9a9;
+    background-color: #f472b6;
     color: #fff;
   }
 
   .pagination .active a {
-    background-color: #6e5e5e !important;
+    background-color: #db2777 !important;
     color: #fff !important;
   }
 </style>
@@ -134,7 +118,7 @@
     <!-- User Table Card -->
     <div class="bg-white/40 backdrop-blur-2xl rounded-3xl p-6 border border-pink-200 shadow-2xl">
 
-      <!-- Search & Add Button Above Table -->
+      <!-- Search & Add Button -->
       <div class="flex flex-col md:flex-row justify-between items-center mb-4 gap-3">
         <!-- Search -->
         <form method="get" action="<?=site_url()?>" class="flex w-full md:w-auto">
