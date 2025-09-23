@@ -1,12 +1,10 @@
-Got it, Andrea! Here's your **complete HTML file** with the pagination section fully integrated and styled to display in a single horizontal row using Tailwind CSS:
 
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Directory - Kuromi Pink Coquette</title>
+  <title>User Directory - Swiftie </title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="<?=base_url();?>/public/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -194,4 +192,4 @@ Got it, Andrea! Here's your **complete HTML file** with the pagination section f
 </html>
 ```
 
-Let me know if you want to add page icons, transition effects, or even a Kuromi sparkle trail on hover. I’m all in for the glam and the code! 💖
+
