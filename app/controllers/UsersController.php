@@ -50,7 +50,7 @@ class UsersController extends Controller {
             $total_rows,
             $records_per_page,
             $page,
-            'users?q=' .$q);
+            'users?q=' .$q
         );
         $data['page'] = $this->pagination->paginate();
 
