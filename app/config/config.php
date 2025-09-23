@@ -79,7 +79,7 @@ $config['ENVIRONMENT']             = 'development';
 | WARNING: You MUST set this value!
 |
 */
- $config['base_url']   = ''; 
+ $config['base_url']   = 'https://pagal-andrea.onrender.com'; 
 /*
 |--------------------------------------------------------------------------
 | Index File
