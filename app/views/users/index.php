@@ -161,20 +161,20 @@
       </div>
 
       <!-- Pagination -->
-      <div class="pagination-container">
-        <?php if (!empty($page)): 
-          echo '<div class="pagination">';
-          echo str_replace(
-            ['<ul>', '</ul>', '<li>', '</li>', '<a', '</a>'],
-            ['', '', '', '', '<a', '</a>'],
-            $page
-          );
-          echo '</div>';
-        endif; ?>
-      </div>
-
+<div class="mt-6 flex justify-center items-center">
+  <?php if (!empty($page)): ?>
+    <div class="flex flex-wrap gap-2">
+      <?php
+        echo str_replace(
+          ['<ul>', '</ul>', '<li>', '</li>', '<a', '</a>'],
+          [
+            '', '', '', '',
+            '<a class="px-4 py-2 rounded-full bg-soft text-theme font-semibold shadow hover:bg-red-600 hover:text-white transition-all duration-300"',
+            '</a>'
+          ],
+          $page
+        );
+      ?>
     </div>
-  </div>
-
-</body>
-</html>
+  <?php endif; ?>
+</div>
