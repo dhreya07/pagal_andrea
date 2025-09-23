@@ -12,50 +12,50 @@ class UsersController extends Controller {
         parent::__construct();
     }
     
-    //pakita
-    public function index()
-    {
-        // Current page
-        $page = 1;
-        if (isset($_GET['page']) && !empty($_GET['page'])) {
-            $page = $this->io->get('page');
-        }
+   public function index()
+{
+    // Current page
+    $page = isset($_GET['page']) && !empty($_GET['page']) 
+        ? (int) $this->io->get('page') 
+        : 1;
 
-        // Search query
-        $q = '';
-        if (isset($_GET['q']) && !empty($_GET['q'])) {
-            $q = trim($this->io->get('q'));
-        }
+    // Search query
+    $q = isset($_GET['q']) && !empty($_GET['q']) 
+        ? trim($this->io->get('q')) 
+        : '';
 
-        $records_per_page = 5;
+    $records_per_page = 5;
 
-        
-        $all = $this->UsersModel->page($q, $records_per_page, $page);
-        $data['users'] = $all['records'];
-        $total_rows = $all['total_rows'];
+    // Fetch records with pagination
+    $all = $this->UsersModel->page($q, $records_per_page, $page);
+    $data['users'] = $all['records'];
+    $total_rows = $all['total_rows'];
 
-        // Pagination 
-        
-        $this->pagination->set_options([
-            'first_link'     => '⏮ First',
-            'last_link'      => 'Last ⏭',
-            'next_link'      => 'Next →',
-            'prev_link'      => '← Prev',
-            'page_delimiter' => '&page='
-        ]);
-       
-        $this->pagination->set_theme('default');
-        
-        $this->pagination->initialize(
-            $total_rows,
-            $records_per_page,
-            $page,
-            'users?q=' .$q
-        );
-        $data['page'] = $this->pagination->paginate();
+    // Pagination options
+    $this->pagination->set_options([
+        'first_link'     => '⏮ First',
+        'last_link'      => 'Last ⏭',
+        'next_link'      => 'Next →',
+        'prev_link'      => '← Prev',
+        'page_delimiter' => '&page=',
+    ]);
+    $this->pagination->set_theme('default');
 
-        $this->call->view('users/index', $data);
-    }
+    // Initialize pagination
+    $this->pagination->initialize(
+        $total_rows,
+        $records_per_page,
+        $page,
+        'users?q=' . urlencode($q)
+    );
+
+    // Pass pagination HTML
+    $data['page'] = $this->pagination->paginate();
+
+    // Load view
+    $this->call->view('users/index', $data);
+}
+
     //pasok
     function create()
     {
