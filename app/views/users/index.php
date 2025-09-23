@@ -1,3 +1,6 @@
+Got it, Andrea! Here's your **complete HTML file** with the pagination section fully integrated and styled to display in a single horizontal row using Tailwind CSS:
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,101 +12,96 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-  body {
-    font-family: 'Poppins', sans-serif;
-    background-image: url('https://i.pinimg.com/originals/3b/7e/2a/3b7e2a2e8c1e4f3c9e3f6e4b6a3f3c8e.jpg'); /* Taylor Swift Evermore portrait */
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-  }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-image: url('https://i.pinimg.com/originals/3b/7e/2a/3b7e2a2e8c1e4f3c9e3f6e4b6a3f3c8e.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
 
-  .overlay {
-    background: rgba(60, 50, 50, 0.6); /* soft charcoal mist */
-  }
-  .overlay {
-  background: rgba(50, 40, 40, 0.5); /* moody mist */
-}
+    .overlay {
+      background: rgba(50, 40, 40, 0.5);
+    }
 
+    .magic-icon {
+      background: linear-gradient(135deg, #4b3f3f, #6e5e5e, #a9a9a9);
+      padding: 0.5rem;
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      animation: float 3s ease-in-out infinite;
+    }
 
-  .magic-icon {
-    background: linear-gradient(135deg, #4b3f3f, #6e5e5e, #a9a9a9);
-    padding: 0.5rem;
-    border-radius: 9999px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-    animation: float 3s ease-in-out infinite;
-  }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
 
-  @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-  }
+    .btn-folk {
+      background: linear-gradient(to right, #6e5e5e, #a9a9a9);
+      color: white;
+    }
 
-  .btn-folk {
-    background: linear-gradient(to right, #6e5e5e, #a9a9a9);
-    color: white;
-  }
+    .btn-folk:hover {
+      background: linear-gradient(to right, #a9a9a9, #6e5e5e);
+    }
 
-  .btn-folk:hover {
-    background: linear-gradient(to right, #a9a9a9, #6e5e5e);
-  }
+    .pagination a:hover {
+      background-color: #a9a9a9;
+      color: #2f2f2f;
+    }
 
-  .pagination a:hover {
-    background-color: #a9a9a9;
-    color: #2f2f2f;
-  }
+    .bg-white\/40 {
+      background-color: rgba(245, 240, 235, 0.4);
+    }
 
-  .bg-white\/40 {
-    background-color: rgba(245, 240, 235, 0.4); /* parchment tone */
-  }
+    .border-pink-200 {
+      border-color: #6e5e5e;
+    }
 
-  .border-pink-200 {
-    border-color: #6e5e5e;
-  }
+    .shadow-2xl {
+      box-shadow: 0 0 25px rgba(60, 50, 50, 0.4);
+    }
 
-  .shadow-2xl {
-    box-shadow: 0 0 25px rgba(60, 50, 50, 0.4);
-  }
+    .text-pink-900 {
+      color: #3e2f2f;
+    }
 
-  .text-pink-900 {
-    color: #3e2f2f;
-  }
+    .bg-pink-50\/80 {
+      background-color: rgba(240, 235, 230, 0.8);
+    }
 
-  .bg-pink-50\/80 {
-    background-color: rgba(240, 235, 230, 0.8);
-  }
+    .placeholder-pink-400::placeholder {
+      color: #7b6e6e;
+    }
 
-  .placeholder-pink-400::placeholder {
-    color: #7b6e6e;
-  }
+    .border-pink-300 {
+      border-color: #7b6e6e;
+    }
 
-  .border-pink-300 {
-    border-color: #7b6e6e;
-  }
+    .focus\:ring-pink-500:focus {
+      --tw-ring-color: #7b6e6e;
+    }
 
-  .focus\:ring-pink-500:focus {
-    --tw-ring-color: #7b6e6e;
-  }
+    .bg-gradient-to-r {
+      background-image: linear-gradient(to right, #6e5e5e, #a9a9a9);
+    }
 
-  .bg-gradient-to-r {
-    background-image: linear-gradient(to right, #6e5e5e, #a9a9a9);
-  }
+    .text-white {
+      color: #fdf6f0;
+    }
 
-  .text-white {
-    color: #fdf6f0;
-  }
+    .hover\:bg-pink-100\/50:hover {
+      background-color: rgba(220, 210, 200, 0.5);
+    }
 
-  .hover\:bg-pink-100\/50:hover {
-    background-color: rgba(220, 210, 200, 0.5);
-  }
-
-  .btn-pink {
-    @apply btn-folk;
-  }
-</style>
-
+    .btn-pink {
+      @apply btn-folk;
+    }
+  </style>
 </head>
 <body class="min-h-screen relative text-pink-900">
 
@@ -116,9 +114,8 @@
     <!-- User Table Card -->
     <div class="bg-white/40 backdrop-blur-2xl rounded-3xl p-6 border border-pink-200 shadow-2xl">
 
-      <!-- Search & Add Button Above Table -->
+      <!-- Search & Add Button -->
       <div class="flex flex-col md:flex-row justify-between items-center mb-4 gap-3">
-        <!-- Search -->
         <form method="get" action="<?=site_url()?>" class="flex w-full md:w-auto">
           <input 
             type="text" 
@@ -132,7 +129,6 @@
           </button>
         </form>
 
-        <!-- Add New User -->
         <a href="<?=site_url('users/create')?>"
            class="inline-flex items-center gap-2 font-bold px-5 py-2 rounded-full shadow-lg btn-pink transition-all duration-300 hover:scale-105">
           <i class="fa-solid fa-user-plus"></i> Add New User
@@ -179,19 +175,23 @@
       </div>
 
       <!-- Pagination -->
-      <div class="mt-4 flex justify-center pagination">
-        <?php if(!empty($page)): 
-            echo str_replace(
-              ['<ul>', '</ul>', '<li>', '</li>', '<a', '</a>'],
-              ['<div class="flex space-x-2">', '</div>', '', '', '<a class="px-3 py-1 rounded-full bg-pink-50/80 text-pink-900 shadow transition cursor-pointer"', '</a>'],
-              $page
-            );
+      <div class="mt-4 flex justify-center">
+        <?php if (!empty($page)): 
+          echo '<div class="flex flex-wrap gap-2">';
+          echo str_replace(
+            ['<ul>', '</ul>', '<li>', '</li>', '<a', '</a>'],
+            ['', '', '', '', '<a class="px-3 py-1 rounded-full bg-pink-50/80 text-pink-900 shadow transition cursor-pointer hover:bg-pink-100/50"', '</a>'],
+            $page
+          );
+          echo '</div>';
         endif; ?>
       </div>
 
     </div>
-
   </div>
 
 </body>
 </html>
+```
+
+Let me know if you want to add page icons, transition effects, or even a Kuromi sparkle trail on hover. I’m all in for the glam and the code! 💖
