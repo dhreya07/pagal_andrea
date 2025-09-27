@@ -18,12 +18,8 @@
   }
 
   .overlay {
-    background: rgba(60, 50, 50, 0.6); /* soft charcoal mist */
+    background: rgba(50, 40, 40, 0.5); /* moody mist */
   }
-  .overlay {
-  background: rgba(50, 40, 40, 0.5); /* moody mist */
-}
-
 
   .magic-icon {
     background: linear-gradient(135deg, #4b3f3f, #6e5e5e, #a9a9a9);
@@ -48,11 +44,6 @@
 
   .btn-folk:hover {
     background: linear-gradient(to right, #a9a9a9, #6e5e5e);
-  }
-
-  .pagination a:hover {
-    background-color: #a9a9a9;
-    color: #2f2f2f;
   }
 
   .bg-white\/40 {
@@ -99,11 +90,38 @@
     background-color: rgba(220, 210, 200, 0.5);
   }
 
-  .btn-pink {
-    @apply btn-folk;
+  /* Pagination Styles */
+  .pagination {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .pagination a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    background-color: rgba(240, 235, 230, 0.8);
+    color: #3e2f2f;
+    font-weight: 600;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    transition: all 0.2s ease-in-out;
+  }
+
+  .pagination a:hover {
+    background-color: #a9a9a9;
+    color: #fff;
+  }
+
+  .pagination .active a {
+    background-color: #6e5e5e !important;
+    color: #fff !important;
   }
 </style>
-
 </head>
 <body class="min-h-screen relative text-pink-900">
 
@@ -127,14 +145,14 @@
             placeholder="Search student..."
             class="px-4 py-2 rounded-l-full bg-pink-50/80 text-pink-900 placeholder-pink-400 border border-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-500 w-full md:w-64">
           <button type="submit" 
-                  class="px-4 py-2 rounded-r-full shadow-lg btn-pink transition duration-300">
+                  class="px-4 py-2 rounded-r-full shadow-lg btn-folk transition duration-300">
             <i class="fa fa-search"></i>
           </button>
         </form>
 
         <!-- Add New User -->
         <a href="<?=site_url('users/create')?>"
-           class="inline-flex items-center gap-2 font-bold px-5 py-2 rounded-full shadow-lg btn-pink transition-all duration-300 hover:scale-105">
+           class="inline-flex items-center gap-2 font-bold px-5 py-2 rounded-full shadow-lg btn-folk transition-all duration-300 hover:scale-105">
           <i class="fa-solid fa-user-plus"></i> Add New User
         </a>
       </div>
@@ -164,11 +182,11 @@
                 </td>
                 <td class="py-3 px-4 flex justify-center gap-3">
                   <a href="<?=site_url('users/update/'.$user['id']);?>"
-                     class="px-3 py-1 rounded-full shadow btn-pink flex items-center gap-1 transition duration-200 hover:scale-105">
+                     class="px-3 py-1 rounded-full shadow btn-folk flex items-center gap-1 transition duration-200 hover:scale-105">
                     <i class="fa-solid fa-pen-to-square"></i> Update
                   </a>
                   <a href="<?=site_url('users/delete/'.$user['id']);?>"
-                     class="inline-flex items-center gap-2 px-3 py-1 rounded-full shadow btn-pink transition-all duration-300 hover:scale-105">
+                     class="inline-flex items-center gap-2 px-3 py-1 rounded-full shadow btn-folk transition-all duration-300 hover:scale-105">
                      <i class="fa-solid fa-trash"></i> Delete
                   </a>
                 </td>
@@ -179,11 +197,11 @@
       </div>
 
       <!-- Pagination -->
-      <div class="mt-4 flex justify-center pagination">
+      <div class="pagination">
         <?php if(!empty($page)): 
             echo str_replace(
               ['<ul>', '</ul>', '<li>', '</li>', '<a', '</a>'],
-              ['<div class="flex space-x-2">', '</div>', '', '', '<a class="px-3 py-1 rounded-full bg-pink-50/80 text-pink-900 shadow transition cursor-pointer"', '</a>'],
+              ['', '', '', '', '<a', '</a>'],
               $page
             );
         endif; ?>
