@@ -39,7 +39,10 @@ defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
  * Class Session
  */
 class Session {
-
+      protected $config;
+    protected $match_ip;
+    protected $match_fingerprint; 
+}
 	/**
 	 * Config var to hold Config files
 	 *
