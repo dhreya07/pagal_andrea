@@ -28,11 +28,16 @@ class Session {
     $this->config['sess_expiration'] = (int) ini_get('session.gc_maxlifetime');
 }
 
-// Only set this BEFORE session is started
+// Only change ini setting if no session is active yet
 if (session_status() === PHP_SESSION_NONE) {
     ini_set('session.gc_maxlifetime', $this->config['sess_expiration']);
+}
+
+// Start the session separately (only once in your code, not here if you already start it elsewhere)
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
 			// --- Set up cookie lifetime ---
 			if (empty($this->config['cookie_lifetime'])) {
 				$this->config['cookie_lifetime'] = 0; // session cookie
