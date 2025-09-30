@@ -298,3 +298,4 @@ $config['csrf_cookie_name']        = 'csrf_cookie_name';
 $config['csrf_expire']             = 7200;
 $config['csrf_regenerate']         = FALSE;
 ?>
+
