@@ -1,10 +1,5 @@
 <?php
 // Put this at the very top of Session.php or index.php
-if (session_status() === PHP_SESSION_NONE) {
-    ini_set('session.gc_maxlifetime', $this->config['sess_expiration']);
-    session_start();
-}
-
 if (headers_sent($file, $line)) {
     die("Headers already sent in $file on line $line");
 }
