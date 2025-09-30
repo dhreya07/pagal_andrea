@@ -1,65 +1,74 @@
 <?php
 // ✅ Make sure walang whitespace or echo/HTML bago nito!
 
-// Start session configuration BEFORE sending output
-if (session_status() === PHP_SESSION_NONE) {
-    // Example config array (you may already have this in your code)
-    $this->config = isset($this->config) ? $this->config : [];
+class Session {
 
-    // --- Set up cookie name ---
-    if (empty($this->config['cookie_name'])) {
-        $this->config['cookie_name'] = ini_get('session.name');
-    } else {
-        // ✅ Must set before session_start()
-        ini_set('session.name', $this->config['cookie_name']);
-    }
+	public $config = [];
+	public $userdata = [];
 
-    // --- Set up session expiration ---
-    if (empty($this->config['sess_expiration'])) {
-        $this->config['sess_expiration'] = (int) ini_get('session.gc_maxlifetime');
-    }
-    ini_set('session.gc_maxlifetime', $this->config['sess_expiration']);
+	public function __construct($config = [])
+	{
+		$this->config = $config;
 
-    // --- Set up cookie lifetime ---
-    if (empty($this->config['cookie_lifetime'])) {
-        $this->config['cookie_lifetime'] = 0; // session cookie
-    }
-    ini_set('session.cookie_lifetime', $this->config['cookie_lifetime']);
+		// Start session configuration BEFORE sending output
+		if (session_status() === PHP_SESSION_NONE) {
+			// Example config array (you may already have this in your code)
+			$this->config = isset($this->config) ? $this->config : [];
 
-    // ✅ Finally, start the session safely
-    session_start();
+			// --- Set up cookie name ---
+			if (empty($this->config['cookie_name'])) {
+				$this->config['cookie_name'] = ini_get('session.name');
+			} else {
+				// ✅ Must set before session_start()
+				ini_set('session.name', $this->config['cookie_name']);
+			}
 
+			// --- Set up session expiration ---
+			if (empty($this->config['sess_expiration'])) {
+				$this->config['sess_expiration'] = (int) ini_get('session.gc_maxlifetime');
+			}
+			ini_set('session.gc_maxlifetime', $this->config['sess_expiration']);
 
-		//Set time before session updates
-	    $regenerate_time = (int) $this->config['sess_time_to_update'];
+			// --- Set up cookie lifetime ---
+			if (empty($this->config['cookie_lifetime'])) {
+				$this->config['cookie_lifetime'] = 0; // session cookie
+			}
+			ini_set('session.cookie_lifetime', $this->config['cookie_lifetime']);
 
-		//Check for Ajax
-	    if ( (empty($_SERVER['HTTP_X_REQUESTED_WITH']) OR strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') AND ($regenerate_time > 0) )
-		{
-	    	if ( ! isset($_SESSION['last_session_regenerate']))
+			// ✅ Finally, start the session safely
+			session_start();
+
+			//Set time before session updates
+			$regenerate_time = (int) ($this->config['sess_time_to_update'] ?? 0);
+
+			//Check for Ajax
+			if ((empty($_SERVER['HTTP_X_REQUESTED_WITH']) OR strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') AND ($regenerate_time > 0))
 			{
-	        	$_SESSION['last_session_regenerate'] = time();
-	    	} elseif ( $_SESSION['last_session_regenerate'] < (time() - $regenerate_time) ) {
-		        $this->sess_regenerate((bool) $this->config['sess_regenerate_destroy']);
-	      	}
-	    } elseif (isset($_COOKIE[$this->config['cookie_name']]) AND $_COOKIE[$this->config['cookie_name']] === $this->session_id()){
-			//Check for expiration time
-			$expiration = empty($this->config['cookie_expiration']) ? 0 : time() + $this->config['cookie_expiration'];
+				if (!isset($_SESSION['last_session_regenerate']))
+				{
+					$_SESSION['last_session_regenerate'] = time();
+				} elseif ($_SESSION['last_session_regenerate'] < (time() - $regenerate_time)) {
+					$this->sess_regenerate((bool) ($this->config['sess_regenerate_destroy'] ?? false));
+				}
+			} elseif (isset($_COOKIE[$this->config['cookie_name']]) AND $_COOKIE[$this->config['cookie_name']] === $this->session_id()){
+				//Check for expiration time
+				$expiration = empty($this->config['cookie_expiration']) ? 0 : time() + $this->config['cookie_expiration'];
 
-			setcookie(
-				$this->config['cookie_name'],
-				$this->session_id(),
-				array('samesite' => $this->config['cookie_samesite'],
-				'secure'   => $this->config['cookie_secure'],
-				'expires'  => $expiration,
-				'path'     => $this->config['cookie_path'],
-				'domain'   => $this->config['cookie_domain'],
-				'httponly' => $this->config['cookie_httponly'],
-				)
-			);
-	    }
+				setcookie(
+					$this->config['cookie_name'],
+					$this->session_id(),
+					array('samesite' => $this->config['cookie_samesite'] ?? 'Lax',
+					'secure'   => $this->config['cookie_secure'] ?? false,
+					'expires'  => $expiration,
+					'path'     => $this->config['cookie_path'] ?? '/',
+					'domain'   => $this->config['cookie_domain'] ?? '',
+					'httponly' => $this->config['cookie_httponly'] ?? true,
+					)
+				);
+			}
 
-	    $this->_lava_init_vars();
+			$this->_lava_init_vars();
+		}
 	}
 
 	/**
@@ -130,6 +139,7 @@ if (session_status() === PHP_SESSION_NONE) {
 	{
 		$_SESSION['last_session_regenerate'] = time();
 		session_regenerate_id($destroy);
+		return session_id();
 	}
 
 	/**
@@ -235,7 +245,7 @@ if (session_status() === PHP_SESSION_NONE) {
 	 * Unset Session Data
 	 *
 	 * @param  array  $keys Array of Sessions
-	 * @return function
+	 * @return void
 	 */
 	public function unset_userdata($keys)
 	{
@@ -316,11 +326,21 @@ if (session_status() === PHP_SESSION_NONE) {
 	{
 		if(isset($key))
 		{
-			return isset($_SESSION[$key]) ? $_SESSION[$key] : NULL;
+		if (is_array($key)) {
+			$result = [];
+			foreach ($key as $k) {
+				if (is_int($k) || is_string($k)) {
+					$result[$k] = isset($_SESSION[$k]) ? $_SESSION[$k] : NULL;
+				}
+			}
+			return $result;
+		} else {
+			return (is_int($key) || is_string($key)) && isset($_SESSION[$key]) ? $_SESSION[$key] : NULL;
+		}
 		}
 		elseif (empty($_SESSION))
 		{
-			return array();
+			return json_encode([]);
 		}
 		$userdata = array();
 		$_exclude = array_merge(
@@ -336,13 +356,14 @@ if (session_status() === PHP_SESSION_NONE) {
 			}
 		}
 
-		return $userdata;
+		// If $key is NULL, return all session data as a JSON string
+		return json_encode($userdata);
 	}
 
 	/**
 	 * Session Destroy
 	 *
-	 * @return function
+	 * @return void
 	 */
 	public function sess_destroy()
 	{
@@ -359,9 +380,11 @@ if (session_status() === PHP_SESSION_NONE) {
 	{
 		if (isset($key))
 		{
-			return (isset($_SESSION['__lava_vars'], $_SESSION['__lava_vars'][$key], $_SESSION[$key]) && ! is_int($_SESSION['__lava_vars'][$key]))
-				? $_SESSION[$key]
-				: NULL;
+			if ((is_int($key) || is_string($key)) && isset($_SESSION['__lava_vars'], $_SESSION['__lava_vars'][$key], $_SESSION[$key]) && !is_int($_SESSION['__lava_vars'][$key])) {
+				return $_SESSION[$key];
+			} else {
+				return NULL;
+			}
 		}
 
 		$flashdata = array();
@@ -381,7 +404,7 @@ if (session_status() === PHP_SESSION_NONE) {
 	 * Set flash data to Session
 	 *
 	 * @param  array $key Session Keys
-	 * @return function
+	 * @return void
 	 */
 	public function set_flashdata($data, $value = NULL)
 	{
