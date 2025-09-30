@@ -26,8 +26,8 @@ class Auth {
      */
     public function register($username, $email, $password, $role = 'user')
     {
-        $hash = password_hash($password, PASSWORD_DEFAULT);
-        return $this->_lava->db->table('users')->insert([
+        $hash = password_hash($password, PASSWORD_BCRYPT);
+        return $this->_lava->db->table('students')->insert([
             'username' => $username,
             'email'    => $email,
             'password' => $hash,
@@ -53,6 +53,7 @@ class Auth {
             $this->_lava->session->set_userdata([
                 'id' => $user['id'],
                 'username' => $user['username'],
+                'email' => $user['email'],
                 'role' => $user['role'],
                 'logged_in' => true
             ]);
@@ -84,12 +85,22 @@ class Auth {
     }
 
     /*
+     * Get user data from session
+     *
+     * @return array
+     */
+    public function userdata()
+    {
+        return $this->_lava->session->userdata();
+    }
+
+    /*
      * Logout user
      *
      * @return void
      */
     public function logout()
     {
-        $this->_lava->session->unset_userdata(['id','username','role','logged_in']);
+        $this->_lava->session->unset_userdata(['id','username','email','role','logged_in']);
     }
 }

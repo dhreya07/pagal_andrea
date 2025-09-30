@@ -1,236 +1,198 @@
 <!DOCTYPE html>
 <html lang="en">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Poppins", sans-serif;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register</title>
 
-        section {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            height: 100vh;
-            overflow: hidden;
-        }
+  <!-- Font Awesome for eye icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-        section .bg,
-        section .trees {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            pointer-events: none;
-        }
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #60a5fa, #6366f1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
 
-        section .trees {
-            z-index: 100;
-        }
+    .form-container {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.6),
+        0 0 12px rgba(59, 130, 246, 0.6);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      animation: borderGlow 3s infinite ease-in-out;
+    }
 
-        .login {
-            position: relative;
-            padding: 60px;
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(15px);
-            border: 1px solid #fff;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
-            border-right: 1px solid rgba(255, 255, 255, 0.5);
-            border-radius: 20px;
-            width: 500px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
-            
-        }
+    .form-container:hover {
+      transform: translateY(-4px) scale(1.01);
+      box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.7),
+        0 0 20px rgba(59, 130, 246, 0.8),
+        0 0 30px rgba(99, 102, 241, 0.6);
+    }
 
-        .login h2 {
-            text-align: center;
-            font-size: 2.5em;
-            font-weight: 600;
-            color: #8f2c24;
-            margin-bottom: 10px;
-        }
+    @keyframes borderGlow {
+      0%   { box-shadow: 0 6px 20px rgba(0,0,0,0.6), 0 0 10px rgba(59,130,246,0.5); }
+      50%  { box-shadow: 0 6px 20px rgba(0,0,0,0.6), 0 0 20px rgba(99,102,241,0.7); }
+      100% { box-shadow: 0 6px 20px rgba(0,0,0,0.6), 0 0 10px rgba(59,130,246,0.5); }
+    }
 
-        .login .inputBox input,
-        .login .inputBox select {
-            width: 100%;
-            padding: 15px 20px;
-            outline: none;
-            font-size: 1.1em;
-            color: #8f2c24;
-            border-radius: 5px;
-            background: #fff;
-            border: none;
-            margin-bottom: 20px;
-        }
+    h2 {
+      margin-bottom: 1rem;
+      color: #1e3a8a;
+    }
 
-        .login .inputBox ::placeholder {
-            color: #8f2c24;
-        }
+    .error {
+      background-color: #fee;
+      border: 1px solid #fcc;
+      color: #c33;
+      padding: 10px;
+      margin-bottom: 1rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      text-align: left;
+    }
 
-        .login .inputBox #btn {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            outline: none;
-            background: #8f2c24;
-            color: #fff;
-            cursor: pointer;
-            font-size: 1.25em;
-            font-weight: 500;
-            border-radius: 5px;
-            transition: 0.5s;
-        }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
 
-        .login .inputBox #btn:hover {
-            background: #d64c42;
-        }
+    .form-group {
+      text-align: left;
+      position: relative;
+    }
 
-        .login .group {
-        display: flex;
-        justify-content: space-between;
-        text-align: center;
-        }
+    label {
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: #1e3a8a;
+    }
 
-        .login .group a {
-        font-size: 1.25em;
-        color: #8f2c24;
-        font-weight: 500;
-        text-decoration: none;
-        }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    select {
+      width: 100%;
+      padding: 10px 40px 10px 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
 
-        .login .group a:nth-child(2) {
-        text-decoration: underline;
-        }
+    select {
+      padding: 10px;
+    }
 
-        .leaves {
-            position: absolute;
-            width: 100%;
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            pointer-events: none;
-        }
+    .toggle-password {
+      position: absolute;
+      right: 10px;
+      top: 68%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #555;
+    }
 
-        .leaves .set {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-        }
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 0.75rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: bold;
+      transition: background 0.3s, transform 0.2s;
+    }
 
-        .leaves .set div {
-            position: absolute;
-            display: block;
-        }
+    button:hover {
+      background: #1e40af;
+      transform: scale(1.05);
+      box-shadow: 0 0 12px rgba(37, 99, 235, 0.6);
+    }
 
-        .leaves .set div:nth-child(1) { left: 20%; animation: animate 20s linear infinite; }
-        .leaves .set div:nth-child(2) { left: 50%; animation: animate 14s linear infinite; }
-        .leaves .set div:nth-child(3) { left: 70%; animation: animate 12s linear infinite; }
-        .leaves .set div:nth-child(4) { left: 5%;  animation: animate 15s linear infinite; }
-        .leaves .set div:nth-child(5) { left: 85%; animation: animate 18s linear infinite; }
-        .leaves .set div:nth-child(6) { left: 90%; animation: animate 12s linear infinite; }
-        .leaves .set div:nth-child(7) { left: 15%; animation: animate 14s linear infinite; }
-        .leaves .set div:nth-child(8) { left: 60%; animation: animate 15s linear infinite; }
+    p {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
 
-        @keyframes animate {
-            0%   { opacity: 0; top: -10%; transform: translateX(20px) rotate(0deg); }
-            10%  { opacity: 1; }
-            20%  { transform: translateX(-20px) rotate(45deg); }
-            40%  { transform: translateX(-20px) rotate(90deg); }
-            60%  { transform: translateX(20px) rotate(180deg); }
-            80%  { transform: translateX(-20px) rotate(45deg); }
-            100% { top: 110%; transform: translateX(20px) rotate(225deg); }
-        }
-    </style>
+    a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
-    <section>
-        <!-- Falling Leaves -->
-        <div class="leaves">
-            <div class="set">
-                <div><img src="/public/images/leaf_03.png"></div>
-                <div><img src="/public/images/leaf_02.png"></div>
-                <div><img src="/public/images/leaf_03.png"></div>
-                <div><img src="/public/images/leaf_04.png"></div>
-                <div><img src="/public/images/leaf_01.png"></div>
-                <div><img src="/public/images/leaf_02.png"></div>
-                <div><img src="/public/images/leaf_03.png"></div>
-                <div><img src="/public/images/leaf_04.png"></div>
-            </div>
-        </div>
+  <div class="form-container">
+    <h2>Register</h2>
 
-        <!-- Background -->
-        <img src="/public/images/bg.jpg" class="bg">
-        <img src="/public/images/trees.png" class="trees">
+    <?php if(isset($error)): ?>
+      <div class="error">
+        <?= html_escape($error); ?>
+      </div>
+    <?php endif; ?>
 
-        <!-- Register Form -->
-        <div class="login">
-            <h2>Register</h2>
-            <form method="POST" action="<?= site_url('auth/register'); ?>" class="inputBox">
-                <input type="text" name="username" placeholder="Username" required>
-                <input type="email" name="email" placeholder="Email" required>
+    <form method="POST" action="<?= site_url('auth/register'); ?>">
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" name="username" placeholder="Choose a username" required>
+      </div>
 
-                <!-- Password field -->
-                <div style="position: relative; margin-bottom: 20px;">
-                    <input type="password" id="password" name="password" placeholder="Password" required 
-                        style="width: 100%; padding: 15px 45px 15px 20px; border-radius: 5px; border: none; font-size: 1.1em;">
-                    <i class="fa-solid fa-eye" id="togglePassword" 
-                    style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #8f2c24;"></i>
-                </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" placeholder="Enter your email" required>
+      </div>
 
-                <!-- Confirm Password field -->
-                <div style="position: relative; margin-bottom: 20px;">
-                    <input type="password" id="confirmPassword" name="confirm_password" placeholder="Confirm Password" required 
-                        style="width: 100%; padding: 15px 45px 15px 20px; border-radius: 5px; border: none; font-size: 1.1em;">
-                    <i class="fa-solid fa-eye" id="toggleConfirmPassword" 
-                    style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #8f2c24;"></i>
-                </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" name="password" placeholder="Create a password" required>
+        <i class="fa-solid fa-eye toggle-password" id="togglePassword"></i>
+      </div>
 
-                <select name="role" required>
-                    <option value="user" selected>User</option>
-                    <option value="admin">Admin</option>
-                </select>
+      <div class="form-group">
+        <label>Role</label>
+        <select name="role" required>
+          <option value="user" selected>User</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
 
-                <button type="submit" id="btn">Register</button>
-            </form>
-            <div class="group">
-                <p>Already have an account? <a href="<?= site_url('auth/login'); ?>">Login here</a></p>
-            </div>
-        </div>
-    </section>
-        <script>
-            function toggleVisibility(toggleId, inputId) {
-                const toggle = document.getElementById(toggleId);
-                const input = document.getElementById(inputId);
+      <button type="submit">Register</button>
+    </form>
 
-                toggle.addEventListener('click', function () {
-                    const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
-                    input.setAttribute('type', type);
+    <p>
+      Already have an account? <a href="<?= site_url('auth/login'); ?>">Login here</a>
+    </p>
+  </div>
 
-                    this.classList.toggle('fa-eye');
-                    this.classList.toggle('fa-eye-slash');
-                });
-            }
+  <script>
+    const togglePassword = document.querySelector('#togglePassword');
+    const password = document.querySelector('#password');
 
-            toggleVisibility('togglePassword', 'password');
-            toggleVisibility('toggleConfirmPassword', 'confirmPassword');
-        </script>
+    togglePassword.addEventListener('click', function () {
+      const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+      password.setAttribute('type', type);
+
+      this.classList.toggle('fa-eye');
+      this.classList.toggle('fa-eye-slash');
+    });
+  </script>
 </body>
 </html>

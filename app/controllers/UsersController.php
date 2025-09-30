@@ -2,32 +2,38 @@
 defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 
 /**
- * Controller: UsersController
+ * Controller: UserController
  * 
  * Automatically generated via CLI.
  */
-
-    class UsersController extends Controller {
-        public function __construct()
-        {
-            parent::__construct();
-        }
-        public function index()
-{
-    $this->call->model('UsersModel');
-
-    // Check kung may naka-login
-    if (!isset($_SESSION['user'])) {
-        redirect('/auth/login');
-        exit;
+class UserController extends Controller {
+    public function __construct()
+    {
+        parent::__construct();
     }
+    
+    public function index()
+    {
+         $this->call->model('UsersModel');
 
-    // Kunin info ng naka-login na user
-    $logged_in_user = $_SESSION['user']; 
-    $data['logged_in_user'] = $logged_in_user;
+         // Check if user is logged in
+         if (!isset($_SESSION['user'])) {
+             redirect('/auth/login');
+             exit;
+         }
 
-    // Current page
-         $page = 1;
+         // Get logged-in user info
+         $logged_in_user = $_SESSION['user']; 
+         $data['logged_in_user'] = $logged_in_user;
+
+         // Redirect regular users to user page
+         if ($logged_in_user['role'] !== 'admin') {
+             redirect('/users/user-page');
+             exit;
+         }
+
+
+        $page = 1;
         if(isset($_GET['page']) && ! empty($_GET['page'])) {
             $page = $this->io->get('page');
         }
@@ -37,54 +43,76 @@ defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
             $q = trim($this->io->get('q'));
         }
 
-        $records_per_page = 10;
+        $records_per_page = 5;
 
-    // Get paginated users
-    $users = $this->UsersModel->page($q, $records_per_page, $page);
+        $user = $this->UsersModel->page($q, $records_per_page, $page);
+        $data['users'] = $user['records'];
+        $total_rows = $user['total_rows'];
 
-    $data['users'] = $users['records'];   // ✅ only rows
-    $total_rows = $users['total_rows'];
-
-    // Pagination setup
-    $this->pagination->set_options([
-        'first_link'     => '⏮ First',
-        'last_link'      => 'Last ⏭',
-        'next_link'      => 'Next →',
-        'prev_link'      => '← Prev',
-        'page_delimiter' => '&page='
-    ]);
-    $this->pagination->set_theme('custom');
-    $this->pagination->initialize($total_rows, $records_per_page, $page, 'users?q='.$q);
-    $data['page'] = $this->pagination->paginate();
-
-    // ✅ Pass only cleaned data to view
-    $this->call->view('users/index', $data);
-}
+        $this->pagination->set_options([
+            'first_link'     => '⏮ First',
+            'last_link'      => 'Last ⏭',
+            'next_link'      => 'Next →',
+            'prev_link'      => '← Prev',
+            'page_delimiter' => '&page='
+        ]);
+        $this->pagination->set_theme('custom');
+        $this->pagination->set_custom_classes([
+            'nav'    => 'flex justify-center mt-6 flex-wrap',
+            'ul'     => 'flex flex-wrap justify-center gap-2',
+            'li'     => 'list-none',
+            'a'      => 'px-3 py-1 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-blue-500 hover:text-white transition',
+            'active' => 'bg-blue-600 text-white font-bold border-blue-600'
+        ]);
 
 
-    public function create()
-    {
-        if($this->io->method() === 'post'){
-            $username = $this->io->post('username');
-            $email = $this->io->post('email');  
 
-            $data = [
-                'username' => $username,
-                'email' => $email
-            ];
-
-            if($this->UsersModel->insert($data)){
-                redirect('/users');
-            } else {
-                echo 'Failed to create user.';
-            }
-        }else{
-           $this->call->view('users/create');
-        }
-        
+        $this->pagination->initialize($total_rows, $records_per_page, $page, 'users?q='.$q);
+        $data['page'] = $this->pagination->paginate();
+        $this->call->view('users/index', $data);
     }
 
-public function update($id)
+    function create()
+    {
+        if($this->io->method()==='post')
+        {
+           $username = $this->io->post('username');
+           $email = $this->io->post('email');
+           $password = password_hash($this->io->post('password'), PASSWORD_BCRYPT);
+           $role = $this->io->post('role');
+
+           // Validate username uniqueness
+           if (!$this->UsersModel->is_username_unique($username)) {
+               $data['error'] = 'Username already exists. Please choose a different username.';
+               $this->call->view('users/create', $data);
+               return;
+           }
+
+           $data = [
+               'username' => $username,
+               'email' => $email,
+               'password' => $password,
+               'role' => $role,
+               'created_at' => date('Y-m-d H:i:s')
+           ];
+
+           if($this->UsersModel->insert($data))
+            {
+              redirect('/users');
+            } else 
+            {
+                $data['error'] = 'Error creating user';
+                $this->call->view('users/create', $data);
+            }
+        }
+         else
+        {
+           $this->call->view('users/create');
+        }
+    }
+
+    
+     public function update($id)
 {
     $this->call->model('UsersModel');
 
@@ -105,32 +133,31 @@ public function update($id)
     if ($this->io->method() === 'post') {
         $username = $this->io->post('username');
         $email = $this->io->post('email');
+        $role = $this->io->post('role');
 
-        // Only allow admin to update role and password
-        if (!empty($logged_in_user) && $logged_in_user['role'] === 'admin') {
-            $role = $this->io->post('role');
-            $password = $this->io->post('password');
-            $data = [
-                'username' => $username,
-                'email' => $email,
-                'role' => $role,
-            ];
-
-            if (!empty($password)) {
-                $data['password'] = password_hash($password, PASSWORD_BCRYPT);
-            }
-        } else {
-            // Normal users can only update username and email
-            $data = [
-                'username' => $username,
-                'email' => $email
-            ];
+        // Validate username uniqueness
+        if (!$this->UsersModel->is_username_unique($username, $id)) {
+            $data['user'] = $user;
+            $data['logged_in_user'] = $logged_in_user;
+            $data['error'] = 'Username already exists. Please choose a different username.';
+            $this->call->view('users/update', $data);
+            return;
         }
+
+        // Prepare data for update - no password changes allowed
+        $data = [
+            'username' => $username,
+            'email' => $email,
+            'role' => $role
+        ];
 
         if ($this->UsersModel->update($id, $data)) {
             redirect('/users');
         } else {
-            echo 'Failed to update user.';
+            $data['user'] = $user;
+            $data['logged_in_user'] = $logged_in_user;
+            $data['error'] = 'Failed to update user.';
+            $this->call->view('users/update', $data);
         }
     } else {
         // Pass both the user being edited and the logged-in user to the view
@@ -140,24 +167,31 @@ public function update($id)
     }
 }
 
-
-    public function delete($id)
+   function delete($id)
+   {
+    if($this->UsersModel->delete($id))
     {
-        $this->call->model('UsersModel');
-        if($this->UsersModel->delete($id)){
-            redirect('/users');
-        } else {
-            echo 'Failed to delete user.';
-        }
+        redirect('/users');
     }
-
-    public function register()
+    else{
+        echo "Error deleting";
+    }
+   }
+   
+   public function register()
     {
         $this->call->model('UsersModel'); // load model
 
         if ($this->io->method() == 'post') {
             $username = $this->io->post('username');
             $password = password_hash($this->io->post('password'), PASSWORD_BCRYPT);
+
+            // Validate username uniqueness
+            if (!$this->UsersModel->is_username_unique($username)) {
+                $data['error'] = 'Username already exists. Please choose a different username.';
+                $this->call->view('/auth/register', $data);
+                return;
+            }
 
             $data = [
                 'username' => $username,
@@ -169,10 +203,13 @@ public function update($id)
 
             if ($this->UsersModel->insert($data)) {
                 redirect('/auth/login');
+            } else {
+                $data['error'] = 'Error creating account. Please try again.';
+                $this->call->view('/auth/register', $data);
             }
+        } else {
+            $this->call->view('/auth/register');
         }
-
-        $this->call->view('/auth/register');
     }
 
 
@@ -186,28 +223,21 @@ public function update($id)
                 $username = $this->io->post('username');
                 $password = $this->io->post('password');
 
-                $this->call->model('UsersModel');
-                $user = $this->UsersModel->get_user_by_username($username);
+                // Use the Auth library's login method which handles both user lookup and password verification
+                if ($this->auth->login($username, $password)) {
+                    // Get user data from the Auth library's session data
+                    $user_data = $this->auth->userdata();
+                    
+                    // Set additional session data for compatibility
+                    $_SESSION['user'] = $user_data;
 
-                if ($user) {
-                    if ($this->auth->login($username, $password)) {
-                        // Set session
-                        $_SESSION['user'] = [
-                            'id'       => $user['id'],
-                            'username' => $user['username'],
-                            'role'     => $user['role']
-                        ];
-
-                        if ($user['role'] == 'admin') {
-                            redirect('/users');
-                        } else {
-                            redirect('/users');
-                        }
+                    if ($user_data['role'] == 'admin') {
+                        redirect('/users');
                     } else {
-                        $error = "Incorrect password!";
+                        redirect('/users/user-page');
                     }
                 } else {
-                    $error = "Username not found!";
+                    $error = "Incorrect username or password!";
                 }
             }
 
@@ -260,6 +290,21 @@ public function update($id)
         $this->call->library('auth');
         $this->auth->logout();
         redirect('auth/login');
+    }
+
+    public function user_page()
+    {
+        // Check if user is logged in
+        if (!isset($_SESSION['user'])) {
+            redirect('/auth/login');
+            exit;
+        }
+
+        // Get logged-in user from session
+        $logged_in_user = $_SESSION['user'];
+        $data['logged_in_user'] = $logged_in_user;
+
+        $this->call->view('users/user_page', $data);
     }
 
 }
