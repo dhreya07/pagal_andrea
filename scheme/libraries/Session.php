@@ -1,11 +1,4 @@
 <?php
-// Put this at the very top of Session.php or index.php
-if (headers_sent($file, $line)) {
-    die("Headers already sent in $file on line $line");
-}
-
-// ✅ Make sure walang whitespace or echo/HTML bago nito!
-
 class Session {
 
 	public $config = [];
