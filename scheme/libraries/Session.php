@@ -1,172 +1,34 @@
 <?php
-defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
-/**
- * ------------------------------------------------------------------
- * LavaLust - an opensource lightweight PHP MVC Framework
- * ------------------------------------------------------------------
- *
- * MIT License
- *
- * Copyright (c) 2020 Ronald M. Marasigan
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * @package LavaLust
- * @author Ronald M. Marasigan <ronald.marasigan@yahoo.com>
- * @since Version 1
- * @link https://github.com/ronmarasigan/LavaLust
- * @license https://opensource.org/licenses/MIT MIT License
- */
+// ✅ Make sure walang whitespace or echo/HTML bago nito!
 
-/**
-* ------------------------------------------------------
-*  Class Session
-* ------------------------------------------------------
- */
-class Session {
+// Start session configuration BEFORE sending output
+if (session_status() === PHP_SESSION_NONE) {
+    // Example config array (you may already have this in your code)
+    $this->config = isset($this->config) ? $this->config : [];
 
-	/**
-	 * Config var to hold Config files
-	 *
-	 * @var mixed
-	 */
-	private $config;
+    // --- Set up cookie name ---
+    if (empty($this->config['cookie_name'])) {
+        $this->config['cookie_name'] = ini_get('session.name');
+    } else {
+        // ✅ Must set before session_start()
+        ini_set('session.name', $this->config['cookie_name']);
+    }
 
-	/**
-	 * Match IP
-	 *
-	 * @var string
-	 */
-	private $match_ip;
+    // --- Set up session expiration ---
+    if (empty($this->config['sess_expiration'])) {
+        $this->config['sess_expiration'] = (int) ini_get('session.gc_maxlifetime');
+    }
+    ini_set('session.gc_maxlifetime', $this->config['sess_expiration']);
 
-	/**
-	 * Match Fingerprint
-	 *
-	 * @var string
-	 */
-	private $match_fingerprint;
+    // --- Set up cookie lifetime ---
+    if (empty($this->config['cookie_lifetime'])) {
+        $this->config['cookie_lifetime'] = 0; // session cookie
+    }
+    ini_set('session.cookie_lifetime', $this->config['cookie_lifetime']);
 
-	/**
-	 * User Data
-	 *
-	 * @var array
-	 */
-	private $userdata;
+    // ✅ Finally, start the session safely
+    session_start();
 
-	public function __construct()
-	{
-		/**
-		 * Session Configs
-		 */
-		$this->config =& get_config();
-
-		//IP Matching
-		$this->match_ip = $this->config['sess_match_ip'];
-
-		//Fingerprint Matching
-        $this->match_fingerprint = $this->config['sess_match_fingerprint'];
-
-		//Set up cookie name
-		if ( ! empty($this->config['cookie_prefix']) ) {
-	    	$this->config['cookie_name'] = $this->config['sess_cookie_name'] ? $this->config['cookie_prefix'].$this->config['sess_cookie_name'] : NULL;
-	    } else {
-	    	$this->config['cookie_name'] = $this->config['sess_cookie_name'] ? $this->config['sess_cookie_name'] : NULL;
-	    }
-
-		//Set up cookie name
-	    if (empty($this->config['cookie_name']))
-		{
-	    	$this->config['cookie_name'] = ini_get('session.name');
-	    } else {
-	    	ini_set('session.name', $this->config['cookie_name']);
-	    }
-
-		//Set up session expiration
-	    if (empty($this->config['sess_expiration']))
-		{
-	    	$this->config['sess_expiration'] = (int) ini_get('session.gc_maxlifetime');
-	    } else {
-	    	$this->config['sess_expiration'] = (int) $this->config['sess_expiration'];
-	    	ini_set('session.gc_maxlifetime', $this->config['sess_expiration']);
-	    }
-
-	    if (isset($this->config['cookie_expiration']))
-		{
-	    	$this->config['cookie_expiration'] = (int) $this->config['cookie_expiration'];
-		} else {
-	    	$this->config['cookie_expiration'] = ( ! isset($this->config['sess_expiration']) AND $this->config['sess_expire_on_close']) ? 0 : (int) $this->config['sess_expiration'];
-		}
-	    session_set_cookie_params(array(
-			'lifetime' => $this->config['cookie_expiration'],
-			'path'     => $this->config['cookie_path'],
-			'domain'   => $this->config['cookie_domain'],
-			'secure'   => $this->config['cookie_secure'],
-			'httponly' => TRUE,
-			'samesite' => $this->config['cookie_samesite']
-		));
-
-	    ini_set('session.use_trans_sid', 0);
-	    ini_set('session.use_strict_mode', 1);
-	    ini_set('session.use_cookies', 1);
-	    ini_set('session.use_only_cookies', 1);
-	    ini_set('session.sid_length', $this->_get_sid_length());
-
-	    if ( ! empty($this->config['sess_driver']) AND $this->config['sess_driver'] == 'file' ) {
-			require_once 'Session/FileSessionHandler.php';
-			$handler = new FileSessionHandler();
-			session_set_save_handler($handler, TRUE);
-		} elseif ( ! empty($this->config['sess_driver']) AND $this->config['sess_driver'] == 'database' ) {
-
-		}
-
-	    //On creation store the useragent fingerprint
-		if(empty($_SESSION['fingerprint']))
-		{
-			$_SESSION['fingerprint'] = $this->generate_fingerprint();
-		//If we should verify user agent fingerprints (and this one doesn't match!)
-		} elseif($this->match_fingerprint && $_SESSION['fingerprint'] != $this->generate_fingerprint()) {
-			return FALSE;
-		}
-
-		//If an IP address is present and we should check to see if it matches
-		if(isset($_SESSION['ip_address']) && $this->match_ip)
-		{
-			//If the IP does NOT match
-			if($_SESSION['ip_address'] != $_SERVER['REMOTE_ADDR'])
-			{
-				return FALSE;
-			}
-		}
-
-		//Set the users IP Address
-		$_SESSION['ip_address'] = $_SERVER['REMOTE_ADDR'];
-
-	    if ( isset($_COOKIE[$this->config['cookie_name']]) )
-		{
-	    	preg_match('/('.session_id().')/', $_COOKIE[$this->config['cookie_name']], $matches);
-	    	if ( empty($matches) )
-			{
-	        	unset($_COOKIE[$this->config['cookie_name']]);
-	      	}
-	    }
-
-		session_start();
 
 		//Set time before session updates
 	    $regenerate_time = (int) $this->config['sess_time_to_update'];
@@ -206,7 +68,7 @@ class Session {
 	 * IP changes (although this method is not as secure as IP checks).
 	 * @return string
 	 */
-	public function generate_fingerprint()
+	    public function generate_fingerprint()
 	{
 		//We don't use the ip-adress, because it is subject to change in most cases
 		foreach(array('ACCEPT_CHARSET', 'ACCEPT_ENCODING', 'ACCEPT_LANGUAGE', 'USER_AGENT') as $name) {
