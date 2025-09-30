@@ -1,23 +1,4 @@
 <?php
-// ✅ Step 1: Check for output before session starts
-if (headers_sent($file, $line)) {
-    die("⚠️ Headers already sent in $file on line $line. Session cannot be started safely.");
-}
-
-// ✅ Step 2: Start session only if not already active
-if (!isset($_SESSION)) {
-
-    // ✅ Step 3: Configure session settings
-    ini_set('session.use_only_cookies', 1);       // Use cookies only
-    ini_set('session.use_trans_sid', 0);          // Disable URL-based session IDs
-
-    // ✅ Step 4: Set session name from config
-    session_name($config['sess_cookie_name']);    // Example: 'lavalsess'
-
-    // ✅ Step 5: Start the session
-    session_start();
-}
-
 defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 /**
  * ------------------------------------------------------------------
@@ -93,11 +74,7 @@ class Session {
 		/**
 		 * Session Configs
 		 */
-		$config = get_config();
-		if (!is_array($config)) {
-			$config = array(); // Ensure $config is always an array
-		}
-		$this->config = $config;
+		$this->config =& get_config();
 
 		//IP Matching
 		$this->match_ip = $this->config['sess_match_ip'];
