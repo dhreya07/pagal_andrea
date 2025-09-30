@@ -25,10 +25,14 @@ class Session {
 
 			// --- Set up session expiration ---
 			if (empty($this->config['sess_expiration'])) {
-				$this->config['sess_expiration'] = (int) ini_get('session.gc_maxlifetime');
-			}
-			ini_set('session.gc_maxlifetime', $this->config['sess_expiration']);
+    $this->config['sess_expiration'] = (int) ini_get('session.gc_maxlifetime');
+}
 
+// Only set this BEFORE session is started
+if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.gc_maxlifetime', $this->config['sess_expiration']);
+    session_start();
+}
 			// --- Set up cookie lifetime ---
 			if (empty($this->config['cookie_lifetime'])) {
 				$this->config['cookie_lifetime'] = 0; // session cookie
@@ -195,14 +199,7 @@ class Session {
    	 */
 	public function session_id()
 	{
-		$seed = str_split('abcdefghijklmnopqrstuvwxyz0123456789');
-        $rand_id = '';
-        shuffle($seed);
-        foreach (array_rand($seed, 32) as $k)
-		{
-            $rand_id .= $seed[$k];
-        }
-        return $rand_id;
+		return session_id();
 	}
 
 	/**
