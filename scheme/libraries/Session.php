@@ -124,7 +124,7 @@ class Session {
 		/**
 		 * Load config
 		 */
-		$this->config = get_config();
+		$this->config = is_array(get_config()) ? get_config() : [];
 
 		if ($this->config['sess_driver'] === 'database') {
 			$handler = load_class('Database_session_handler', 'libraries/Session');
