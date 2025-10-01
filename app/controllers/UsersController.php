@@ -15,7 +15,7 @@ class UsersController extends Controller
         }
 
         // Only admin can access this controller
-        $role = session('role') ?? 'user';
+        $role = $_SESSION['role'] ?? 'user';
         if ($role !== 'admin') {
             redirect('auth/dashboard');
         }
@@ -79,24 +79,24 @@ class UsersController extends Controller
             return;
         }
 
+        // ✅ Always pass user data to the view
+        $data['user'] = $user;
+
         if ($this->io->method() == 'post') {
-            $data = [
+            $update_data = [
                 'first_name' => $this->io->post('first_name'),
                 'last_name'  => $this->io->post('last_name'),
                 'email'      => $this->io->post('email')
             ];
 
-            if ($this->UsersModel->update($id, $data)) {
+            if ($this->UsersModel->update($id, $update_data)) {
                 redirect('/users');
             } else {
                 $data['error'] = 'Error updating user.';
-                $data['user'] = $user;
-                $this->call->view('users/update', $data);
             }
-        } else {
-            $data['user'] = $user;
-            $this->call->view('users/update', $data);
         }
+
+        $this->call->view('users/update', $data);
     }
 
     public function delete($id)
@@ -104,8 +104,8 @@ class UsersController extends Controller
         if ($this->UsersModel->delete($id)) {
             redirect('/users');
         } else {
-            echo 'Error deleting user.';
+            $data['error'] = 'Error deleting user.';
+            $this->call->view('users/index', $data); // ✅ Avoid echo
         }
     }
 }
-?>

@@ -6,6 +6,7 @@ class AuthController extends Controller
     public function register()
     {
         $this->call->library('auth');
+        $data = []; // ✅ Always define $data
 
         if ($this->io->method() == 'post') {
             $username = $this->io->post('username');
@@ -19,20 +20,21 @@ class AuthController extends Controller
             }
         }
 
-        $this->call->view('auth/register', $data ?? []);
+        $this->call->view('auth/register', $data);
     }
 
     public function login()
     {
         $this->call->library('auth');
+        $data = []; // ✅ Always define $data
 
         if ($this->io->method() == 'post') {
             $username = $this->io->post('username');
             $password = $this->io->post('password');
 
             if ($this->auth->login($username, $password)) {
-                $role = session('role') ?? 'user';
-                
+                $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'user';
+
                 // Redirect based on role
                 if ($role === 'admin') {
                     redirect('/users'); // full access
@@ -44,7 +46,7 @@ class AuthController extends Controller
             }
         }
 
-        $this->call->view('auth/login', $data ?? []);
+        $this->call->view('auth/login', $data);
     }
 
     public function dashboard()
@@ -55,7 +57,7 @@ class AuthController extends Controller
             redirect('auth/login');
         }
 
-        $role = session('role') ?? 'user';
+        $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'user';
 
         // Admins go to /users
         if ($role === 'admin') {
