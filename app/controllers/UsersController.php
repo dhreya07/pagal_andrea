@@ -1,33 +1,37 @@
 <?php
 defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 
-class UsersController extends Controller {
+class UsersController extends Controller 
+{
     public function __construct()
     {
         parent::__construct();
         $this->call->model('UsersModel');
+        $this->call->library('auth');
+
+        // Redirect non-logged-in users
+        if (!$this->auth->is_logged_in()) {
+            redirect('auth/login');
+        }
+
+        // Only admin can access this controller
+        $role = session('role') ?? 'user';
+        if ($role !== 'admin') {
+            redirect('auth/dashboard');
+        }
     }
 
     public function index()
     {
-        // All users can view the student list
-        $page = 1;
-        if (isset($_GET['page']) && !empty($_GET['page'])) {
-            $page = $this->io->get('page');
-        }
-
-        $q = '';
-        if (isset($_GET['q']) && !empty($_GET['q'])) {
-            $q = trim($this->io->get('q'));
-        }
-
+        $page = (int) ($this->io->get('page') ?? 1);
+        $q = trim($this->io->get('q') ?? '');
         $records_per_page = 5;
 
         $all = $this->UsersModel->page($q, $records_per_page, $page);
         $data['users'] = $all['records'];
         $total_rows = $all['total_rows'];
 
-        // Pagination setup
+        $this->call->library('pagination');
         $this->pagination->set_options([
             'first_link'     => '⏮ First',
             'last_link'      => 'Last ⏭',
@@ -35,7 +39,6 @@ class UsersController extends Controller {
             'prev_link'      => '← Prev',
             'page_delimiter' => '&page='
         ]);
-
         $this->pagination->set_theme('default');
         $this->pagination->initialize(
             $total_rows,
@@ -43,89 +46,66 @@ class UsersController extends Controller {
             $page,
             site_url('/users') . '?q=' . urlencode($q)
         );
-        $data['page'] = $this->pagination->paginate();
 
+        $data['page'] = $this->pagination->paginate();
         $this->call->view('users/index', $data);
     }
 
-
-    function create(){
-        if ($_SESSION['role'] !== 'admin') {
-    // redirect regular users to the dashboard
-    redirect(site_url('auth/dashboard'));
-    exit;
-}
-
-
+    public function create()
+    {
         if ($this->io->method() == 'post') {
-            $firstname= $this->io->post('first_name');
-            $lastname= $this->io->post('last_name');
-            $email= $this->io->post('email');
-
-            $data = array(
-                'first_name' => $firstname,
-                'last_name' => $lastname,
-                'email' => $email
-            );
+            $data = [
+                'first_name' => $this->io->post('first_name'),
+                'last_name'  => $this->io->post('last_name'),
+                'email'      => $this->io->post('email')
+            ];
 
             if ($this->UsersModel->insert($data)) {
-                redirect(site_url('/users'));
+                redirect('/users');
             } else {
-                echo 'Error creating student.';
+                $data['error'] = 'Error creating user.';
+                $this->call->view('users/create', $data);
             }
         } else {
             $this->call->view('users/create');
         }
     }
 
-    function update($id){
-        if ($_SESSION['role'] !== 'admin') {
-    // redirect regular users to the dashboard
-    redirect(site_url('auth/dashboard'));
-    exit;
-}
-
-
+    public function update($id)
+    {
         $user = $this->UsersModel->find($id);
-        if(!$user) {
-            echo "Student not found.";
+        if (!$user) {
+            redirect('/users'); // user not found
             return;
         }
 
         if ($this->io->method() == 'post') {
-            $firstname= $this->io->post('first_name');
-            $lastname= $this->io->post('last_name');
-            $email= $this->io->post('email');
-
-            $data = array(
-                'first_name' => $firstname,
-                'last_name' => $lastname,
-                'email' => $email
-            );
+            $data = [
+                'first_name' => $this->io->post('first_name'),
+                'last_name'  => $this->io->post('last_name'),
+                'email'      => $this->io->post('email')
+            ];
 
             if ($this->UsersModel->update($id, $data)) {
-                redirect(site_url('/users'));
+                redirect('/users');
             } else {
-                echo 'Error updating student.';
+                $data['error'] = 'Error updating user.';
+                $data['user'] = $user;
+                $this->call->view('users/update', $data);
             }
         } else {
             $data['user'] = $user;
             $this->call->view('users/update', $data);
         }
     }
-    
-    function delete($id){
-        if ($_SESSION['role'] !== 'admin') {
-    // redirect regular users to the dashboard
-    redirect(site_url('auth/dashboard'));
-    exit;
-}
 
-
-        if($this->UsersModel->delete($id)){
-            redirect(site_url('/users'));
+    public function delete($id)
+    {
+        if ($this->UsersModel->delete($id)) {
+            redirect('/users');
         } else {
-            echo 'Error deleting student.';
+            echo 'Error deleting user.';
         }
     }
 }
+?>
