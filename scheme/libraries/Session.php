@@ -153,11 +153,14 @@ class Session {
 			$this->config['cookie_name'] = $this->config['sess_cookie_name'] ?? ini_get('session.name');
 		}
 
-		ini_set('session.name', $this->config['cookie_name']);
+		session_name($this->config['cookie_name']);
+   
+		
 
 		// Setup expiration times
-		$this->config['sess_expiration'] = (int)($this->config['sess_expiration'] ?? ini_get('session.gc_maxlifetime'));
-		ini_set('session.gc_maxlifetime', $this->config['sess_expiration']);
+		ini_set('session.name', $this->config['cookie_name']);
+        ini_set('session.gc_maxlifetime', $this->config['sess_expiration']);
+
 
 		$this->config['cookie_expiration'] = isset($this->config['cookie_expiration'])
 			? (int)$this->config['cookie_expiration']
